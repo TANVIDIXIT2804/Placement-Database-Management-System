@@ -1,0 +1,4 @@
+flask-mysqldb
+pyyaml
+Authlib
+requests

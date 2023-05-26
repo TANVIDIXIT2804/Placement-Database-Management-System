@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Student Resumes</title>
+	<!-- Add Bootstrap CSS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</head>
+<body>
+	<div class="container">
+		<h1>Student Resumes</h1>
+		<form id="add-resume-form">
+			<div class="form-group">
+				<label for="resume_file_name">Resume Name:</label>
+				<input type="text" class="form-control" id="resume_file_name" placeholder="Enter resume name">
+			</div>
+			<div class="form-group">
+				<label for="resume_file_link">Resume Link:</label>
+				<input type="text" class="form-control" id="resume_file_link" placeholder="Enter resume link">
+			</div>
+			<button type="submit" class="btn btn-primary">Add Resume</button>
+		</form>
+		<hr>
+		<h2>Existing Resumes:</h2>
+		<ul id="resume-list"></ul>
+	</div>
+
+	<!-- Add jQuery and Bootstrap JS -->
+
+	<script>
+		// Submit form data to API endpoint on form submit
+		$('#add-resume-form').submit(function(event) {
+			event.preventDefault();
+			var resumeName = $('#resume_file_name').val();
+			var resumeLink = $('#resume_file_link').val();
+		
+		  var postData = {
+			resume_file_name: resumeName,
+			resume_file_link: resumeLink
+		  };
+		
+		  // Send the JSON object in the POST request
+		  $.ajax({
+			url: "http://localhost:5000/api/student/resume",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify(postData),
+			success: function(data, status) {
+			  if (status == "success") {
+				alert("Resume submitted successfully.");
+			  } else {
+				alert("Resume submission failed.");
+			  }
+			}
+		  });
+		});
+
+		// Get list of existing resumes from API endpoint on page load
+		$(document).ready(function() {
+			getResumes();
+		});
+
+		function getResumes() {
+			$.get('http://localhost:5000/api/student/resume')
+			.done(function(response) {
+                // Clear existing list
+                $('#resume-list').empty();
+                // Add each resume to the list
+                response.forEach(function(resume) {
+                    var listItem = '<li><strong>' + resume.resume_file_name + '</strong> (ID: ' + resume.resume_id + ') - <a href="' + resume.resume_link + '">Link</a></li>';
+                    $('#resume-list').append(listItem);
+                });
+            })
+            .fail(function(error) {
+                console.error(error);
+            });
+        }
+    </script>
+</body>
+</html>

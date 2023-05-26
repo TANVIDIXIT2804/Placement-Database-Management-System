@@ -1,0 +1,115 @@
+<html>
+  <head>
+    <title>Student Dashboard</title> 
+    <script src="./redirect_student.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+      /* Set background color and font family */
+      body {
+        background-color: #f4f4f4;
+        font-family: Arial, sans-serif;
+      }
+      
+      /* Style the header */
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+      }
+      
+      /* Style the main content */
+      main {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      
+      /* Style the footer */
+      footer {
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Student Dashboard</h1>
+    </header>
+    <main>
+        <div class="row">
+            <div class="col">
+              <form action="/student/profile" method="get" >
+                  <div class="dashboard-option">
+                      <button class="btn btn-primary" type="submit">Profile</button>
+                  </div>
+              </form>
+            </div>
+            <div class="col">
+              <form action="/student/resume" method="get" >
+                  <div class="dashboard-option">
+                      <button class="btn btn-primary" type="submit">My Resumes</button>
+                  </div>
+              </form>
+            </div>
+            <div class="col">
+                <div class="dropdown">
+                  <button class="btn btn-primary dropdown-toggle" type="button" id="opportunitiesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Opportunities
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="opportunitiesDropdown">
+                    <form action="/student/opportunities/applied" method="get">
+                      <button type="submit">Applied</button>
+                  </form>
+                      <form action="/student/opportunities/all" method="get">
+                          <button type="submit">All Opportunities</button>
+                      </form>  
+                      <form action="/student/opportunities/accepted" method="get">
+                          <button type="submit">Accepted</button>
+                      </form> 
+                      <form action="/student/opportunities/rejected" method="get">
+                          <button type="submit">Rejected</button>
+                      </form> 
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+    </main>
+
+    <footer>
+      <p>Copyright &copy; 2023</p>
+    </footer>
+
+    <script>
+      function handleOptionSelection(option) {
+        switch(option) {
+          case 'eligible':
+            // redirect to eligible.html
+            break;
+          case 'not eligible':
+            // redirect to not eligible.html
+            break;
+          case 'accepted':
+            // redirect to accepted.html
+            break;
+          case 'rejected':
+            // redirect to rejected.html
+            break;
+        }
+      }
+
+</script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

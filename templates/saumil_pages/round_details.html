@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Opportunities</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+      body {
+        background-color: #f5f5f5;
+      }
+      .container {
+        background-color: #ffffff;
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+      }
+      .opportunity-card {
+        background-color: #eaeaea;
+        margin-bottom: 20px;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+      }
+      .opportunity-card:hover {
+        cursor: pointer;
+        background-color: #d9d9d9;
+      }
+      .round-checkbox {
+        margin-top: 10px;
+      }
+      .round-btn {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Opportunities</h2>
+      <div id="opportunities">
+        <!-- The opportunities will be dynamically generated using JavaScript -->
+      </div>
+    </div>
+
+    <!-- Modal for opportunity details -->
+    <div id="opportunity-modal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+            <h4 class="modal-title">Opportunity Details</h4>
+          </div>
+          <div class="modal-body">
+            <div id="opportunity-details">
+              <!-- The opportunity details will be dynamically generated using JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+            $(document).ready(function () {
+              // Get opportunities for this HR from API
+              $.get(
+                "http://localhost:5000/api/cds/opportunity",
+                function (data, status) {
+                  var opportunities = data;
+                  const length = opportunities.length;
+                  for (var i = 0; i < length; i++) {
+                    var opportunity = opportunities[i];
+                    var opportunity_card =
+                      "<div class='opportunity-card' data-opp-id='" +
+                      opportunity.opp_id +
+                      "'>";
+                    opportunity_card += "<h4>" + opportunity.opp_title + "</h4>";
+                    opportunity_card +=
+                      "<p>" +
+                      opportunity.address_line_1 +
+                      ", " +
+                      opportunity.address_line_2 +
+                      ", " +
+                      opportunity.address_line_3 +
+                      "</p>";
+                    opportunity_card += "<p>" + opportunity.opp_type + "</p>";
+                    //opportunity_card += "<button class='delete-btn' data-opp-id='" + opportunity.opp_id + "'>Delete</button>";
+                    opportunity_card += "</div>";
+                    $("#opportunities").append(opportunity_card);
+                  }
+                }
+              );
+            });
+
+             // Open modal and show opportunity details when an opportunity card is clicked
+      // Open modal and get opportunity details and students when an opportunity card is clicked
+      $(document).on("click", ".opportunity-card", function () {
+        var oppID = $(this).data("opp-id");
+        $("#opportunity-modal").html("");
+        var modalContent = `
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Enter Round Details</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+              </div>
+              <div class="modal-body">
+                <form id="round-form">
+                  <div class="form-group">
+                    <label for="round-type">Round Type</label>
+                    <input type="text" class="form-control" id="round-type" name="roundType">
+                  </div>
+                  <div class="form-group">
+                    <label for="round-venue-link">Round Venue Link</label>
+                    <input type="text" class="form-control" id="round-venue-link" name="roundVenueLink">
+                  </div>
+                  <div class="form-group">
+                    <label for="round-date">Round Date</label>
+                    <input type="date" class="form-control" id="round-date" name="roundDate">
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="round-submit-btn">Submit</button>
+              </div>
+            </div>
+          </div>
+        `;
+        $("#opportunity-modal").append(modalContent);
+
+        $("#opportunity-modal").modal("show");
+
+        $("#round-submit-btn").on("click", function () {
+          var roundType = $("#round-type").val();
+          var roundVenueLink = $("#round-venue-link").val();
+          var roundDate = $("#round-date").val();
+          var postData = {
+            round_type: roundType,
+            round_venue_link: roundVenueLink,
+            round_date: roundDate,
+            opp_id: oppID
+          };
+          // Send the JSON object in the POST request
+          $.ajax({
+            url: "http://localhost:5000/api/cds/update_round_details",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(postData),
+            success: function (data, status) {
+              if (status == "success") {
+                alert("Round details updated.");
+              } else {
+                alert("Round details update failed.");
+              }
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

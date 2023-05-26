@@ -1,0 +1,195 @@
+<!-- this is the basic template for the POC opportunities page --> 
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Opportunities</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+      body {
+        background-color: #F5F5F5;
+      }
+      .container {
+        background-color: #FFFFFF;
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+      }
+      .opportunity-card {
+        background-color: #EAEAEA;
+        margin-bottom: 20px;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+      }
+      .opportunity-card:hover {
+        cursor: pointer;
+        background-color: #D9D9D9;
+      }
+      .round-checkbox {
+        margin-top: 10px;
+      }
+      .round-btn {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Opportunities</h2>
+      <div id="opportunities">
+        <!-- The opportunities will be dynamically generated using JavaScript -->
+      </div>
+    </div>
+
+    <!-- Modal for opportunity details -->
+    <div id="opportunity-modal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Opportunity Details</h4>
+          </div>
+          <div class="modal-body">
+            <div id="opportunity-details">
+              <!-- The opportunity details will be dynamically generated using JavaScript -->
+            </div>
+            <table class="table">
+              <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Select in Opportunity</th>
+                    <th>Reject in Opportunity</th>
+                </tr>
+              </thead>
+              <tbody id="students">
+                <!-- The students will be dynamically generated using JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      $(document).ready(function() {
+          // Get opportunities for this HR from API
+          // poc_email_id is in backend
+          $.get("http://localhost:5000/api/poc/opportunities", function(data, status) {
+            var opportunities = data;
+            const length = opportunities.length;
+            for (var i = 0; i < length; i++) {
+              var opportunity = opportunities[i];
+              var opportunity_card = "<div class='opportunity-card' data-opp-id='" + opportunity.opp_id + "'>";
+              opportunity_card += "<h4>" + opportunity.opp_title + "</h4>";
+              opportunity_card += "<p>" + opportunity.address_line_1 + ", " + opportunity.address_line_2 + ", " + opportunity.address_line_3 + "</p>";
+              opportunity_card += "<p>" + opportunity.opp_type + "</p>";
+              opportunity_card += "</div>";
+              $("#opportunities").append(opportunity_card);
+            }
+          });
+
+          // Open modal and get opportunity details and students when an opportunity card is clicked
+          $(document).on("click", ".opportunity-card", function() {
+            var opp_id = $(this).data("opp-id");
+            $.get("http://localhost:5000/api/poc/opportunities/student?opp_id=" + opp_id, function(data, status) {
+              var students = data;
+              $("#students").html("");
+              for (var i = 0; i < students.length; i++) {
+                var student = students[i];
+                var student_row = "<tr>";
+                student_row += "<td>" + student.student_first_name + " " + student.student_last_name + "</td>";
+                student_row += "<td><button class='select-btn btn-success' data-student-id='" + student.student_id + "' data-opp-id='" + opp_id + "'>Selected</button></td>";
+                student_row += "<td><button class='reject-btn btn-danger' data-student-id='" + student.student_id + "' data-opp-id='" + opp_id + "'>Reject</button></td></tr>";
+                $("#students").append(student_row);
+              } 
+              doneButton = "<button class='proceed-btn btn-success' data-student-id='" + student.student_id + "' data-opp-id='" + opp_id + "'>Proceed To Next Round</button>";
+              $('#students').append(doneButton);
+            });
+            $("#opportunity-modal").modal("show");
+          });
+
+
+          $(document).on("click", ".proceed-btn", function() {
+            var student_id = $(this).data("student-id");
+            var opp_id = $(this).data("opp-id");
+            var dataToSend = {
+              student_id: student_id,
+              opp_id: opp_id,
+              to_do: "proceed"
+            };
+            $.ajax({
+              url: "http://localhost:5000/api/poc/opportunity/student",
+              type: "POST",
+              data: JSON.stringify(dataToSend),
+              contentType: "application/json; charset=utf-8",
+              dataType: "json",
+              success: function(data, status) {
+                if (status == "success") {
+                  alert("Round Complete.");
+                } else {
+                  alert("Round Complete Failed");
+                }
+              }
+            });
+          }); 
+
+          $(document).on("click", ".reject-btn", function() {
+            var student_id = $(this).data("student-id");
+            var opp_id = $(this).data("opp-id");
+            var dataToSend = {
+              student_id: student_id,
+              opp_id: opp_id,
+              to_do: "reject"
+            };
+            $.ajax({
+              url: "http://localhost:5000/api/poc/opportunity/student",
+              type: "POST",
+              data: JSON.stringify(dataToSend),
+              contentType: "application/json; charset=utf-8",
+              dataType: "json",
+              success: function(data, status) {
+                if (status == "success") {
+                  alert("Candidate Rejected Successfully.");
+                } else {
+                  alert("Candidate Rejection Failed.");
+                }
+              }
+            });
+          }); 
+
+          $(document).on("click", ".select-btn", function() {
+            var student_id = $(this).data("student-id");
+            var opp_id = $(this).data("opp-id");
+            var dataToSend = {
+              student_id: student_id,
+              opp_id: opp_id,
+              to_do: "select"
+            };
+            $.ajax({
+              url: "http://localhost:5000/api/poc/opportunity/student",
+              type: "POST",
+              data: JSON.stringify(dataToSend),
+              contentType: "application/json; charset=utf-8",
+              dataType: "json",
+              success: function(data, status) {
+                if (status == "success") {
+                  alert("Student Selected in Opportunity.");
+                } else {
+                  alert("Student Selection Failed.");
+                }
+              }
+            });
+          }); 
+
+        });
+    </script>
+  </body>
+</html>
+

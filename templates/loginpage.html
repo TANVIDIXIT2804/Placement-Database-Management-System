@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .container {
+      margin-top: 50px;
+      text-align: center;
+    }
+    h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #343a40;
+    }
+    .btn-primary {
+      border-color: #343a40;
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 10px 30px;
+    }
+    .btn-primary:hover {
+      background-color: #6c757d;
+      border-color: #6c757d;
+    }
+    .section {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      margin-bottom: 50px;
+    }
+    .section:first-child {
+      margin-top: 0;
+    }
+    @media (max-width: 768px) {
+      .section {
+        padding: 20px;
+      }
+      .btn-primary {
+        font-size: 1rem;
+        padding: 8px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 offset-md-4 section">
+        <h2>Login as Student</h2>
+        <button id="studentBtn" class="btn btn-primary">Login</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 offset-md-4 section">
+        <h2>Login as CDS Team</h2>
+        <button id="cdsBtn" class="btn btn-primary">Login</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 offset-md-4 section">
+        <h2>Login as Point of Contact</h2>
+        <button id="pocBtn" class="btn btn-primary">Login</button>
+      </div>
+    </div>
+  </div>
+  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+  <!-- Custom JS -->
+  <script>
+    // Get the login buttons
+    const studentBtn = document.getElementById('studentBtn');
+    const cdsBtn = document.getElementById('cdsBtn');
+    const pocBtn = document.getElementById('pocBtn');
+
+    // Add event listeners to the buttons
+    studentBtn.addEventListener('click', () => {
+      const data = { person: 'student' };
+      fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        // Handle the response from the server
+        console.log(response);
+      })
+      .catch(error => {
+        // Handle any errors that occur during the fetch request
+        console.error(error);
+      });
+    });
+    
+    cdsBtn.addEventListener('click', () => {
+      const data = { person: 'cds' };
+      fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        // Handle the response from the server
+        console.log(response);
+      })
+      .catch(error => {
+        // Handle any errors that occur during the fetch request
+        console.error(error);
+      });
+    });
+
+    pocBtn.addEventListener('click', () => {
+      const data = { person: 'poc' };
+      fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => {
+          // Handle the response from the server
+          console.log(response);
+        })
+        .catch(error => {
+          // Handle any errors that occur during the fetch request
+          console.error(error);
+        });
+    });
+</script>
+</body>
+</html>
